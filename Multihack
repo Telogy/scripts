@@ -21,7 +21,7 @@ class SocketClient {
 
     onConnect() {
         if(this.isConnected()) {
-            this.socket.close();
+            return;
         }
 
         this.socket = new WebSocket("ws://localhost:5050/");
@@ -967,11 +967,11 @@ window.Utils = {
                     Settings.Bots.bringer.x = targetX, Settings.Bots.bringer.y = targetY; 
                 }, 
             },
-            { type: 'display', label: 'Target X', object: Settings.Bots.bringer, property: 'x' },
-            { type: 'display', label: 'Target Y', object: Settings.Bots.bringer, property: 'y' },
+            { type: 'display', label: 'Location X', object: Settings.Bots.bringer, property: 'x' },
+            { type: 'display', label: 'Location Y', object: Settings.Bots.bringer, property: 'y' },
             { type: 'text', label: 'Enter Token', object: Settings.Bots.holder, property: 'token', onChange: data => { Utils.saveSettings(); } },
             { type: 'text', label: 'Enter TokenID', object: Settings.Bots.holder, property: 'tokenId', onChange: data => { Utils.saveSettings(); } },
-            { type: 'button', label: 'Start Holder', 
+            { type: 'button', label: 'Start Holding', 
                 action: async () => { 
                     if(!Client.isConnected()) {
                         alert("Cannot holding token cause host is offline!");
