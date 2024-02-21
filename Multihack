@@ -47,7 +47,7 @@ class SocketClient {
             if (!Settings.Bots.e) return;
             this.getServer(serverLobbyId);
             this.getRecaptcha();
-        }, 300);
+        }, 800);
     }
 
     onClose() {
