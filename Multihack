@@ -44,7 +44,7 @@ class SocketClient {
     onOpen() {
         alert('Connected on Socket');
         this.interval = setInterval(() => {
-            if (!Settings.Bots.enabled) return;
+            if (!Settings.Bots.enabled || !serverLobbyId) return;
             this.getServer(serverLobbyId);
             this.getRecaptcha();
         }, 800);
@@ -927,15 +927,15 @@ window.Utils = {
                         Client.onConnect();
                         return;
                     }
-
-                    Client.send(["ee", isEnabled ? 1 : 0]);
                 },
             },
             { type: 'range', label: 'Bot amount to spawn', min: 0, max: 100, step: 1, object: Settings.Bots, property: "amount", onChange: (data) => { } },
             {
                 type: 'button', label: 'Send bots', 
-                action: () => {
-                    Client.send(["bb", Settings.Bots.amount]);
+                action: async () => {
+                    for(let i = 0; i < Settings.Bots.amount; i++) {
+                        Client.getRecaptcha();
+                    }
                 },
             }
         ], { folder: "Bots" });
