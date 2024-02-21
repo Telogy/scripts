@@ -206,7 +206,12 @@ BlizzardImage.src = "https://raw.githubusercontent.com/XmreLoux/images/main/bliz
     JoinToken: { e: false, t: "", i: "" },
     Bots: {
         enabled: false,
-        amount: 0,
+        bringer: {
+            enabled: false,
+            mode: "",
+            x: -1,
+            y: -1
+        },
     },
 
     LobbyRejoin: true,
@@ -929,7 +934,15 @@ window.Utils = {
                     }
                 },
             },
-            { type: 'range', label: 'Bot amount to spawn', min: 0, max: 100, step: 1, object: Settings.Bots, property: "amount", onChange: (data) => { } },
+            { 
+                type: 'folder', 
+                label: 'Bringer', 
+                open: false 
+            }
+            /*{ 
+                type: 'range', label: 'Bot amount to spawn', min: 0, max: 100, step: 1, object: Settings.Bots, property: "amount", 
+                onChange: (data) => { } 
+            },
             {
                 type: 'button', label: 'Send bots', 
                 action: async () => {
@@ -938,15 +951,63 @@ window.Utils = {
                         return;
                     }
 
-                    let recaptcha = [];
+                    // Pizdec
+                    let tokens = [];
                     for(let i = 0; i < Settings.Bots.amount; i++) {
-                        recaptcha.push(await get_recaptcha_token());
+                        tokens.push(await get_recaptcha_token());
                     }
 
-                    Client.send(["bb", recaptcha]);
+                    Client.send(["bb", tokens]);
                 },
-            }
+            }*/
         ], { folder: "Bots" });
+        gui.Register([
+            { 
+                type: 'checkbox', label: 'Start Bots', object: Settings.Bots, property: 'enabled', 
+                onChange: isEnabled => { 
+                    if(!Client.isConnected()) {
+                        alert("Cannot enable bringer cause host is offline!");
+                        return;
+                    }
+
+                    Client.send(["pp", isEnabled ? 1 : 0]);
+                },
+            },
+            { 
+                type: 'select', label: 'Select Mode', object: Settings.Bots.bringer, property: "mode", 
+                options: ['PathFinder', 'AfkBringer'], 
+                onChange: () => {
+                    if(!Client.isConnected()) {
+                        alert("Cannot select mode cause host is offline!");
+                        return;
+                    }
+
+                    let mode = 0;
+                    switch(Settings.Bots.bringer.mode) {
+                        case "PathFinder": mode = 1; break;
+                        case "AfkBringer": mode = 2; break;
+                    }
+
+                    Client.send(["mm", mode])
+                } 
+            },
+            { 
+                type: 'button', label: 'Set target location', 
+                action: () => { 
+                    let myPlayer = p.$Vu[m.vUU]; 
+                    if (myPlayer) { 
+                        Settings.Bots.bringer.x = Math.floor(myPlayer.x / 100); 
+                        Settings.Bots.bringer.y = Math.floor(myPlayer.y / 100); 
+                    }; 
+                }, 
+            },
+
+            { type: 'text', label: 'Set X', object: Settings.Bots.bringer, property: 'x', onChange: () => { } },
+            { type: 'text', label: 'Set Y', object: Settings.Bots.bringer, property: 'y', onChange: () => { } },
+            { type: 'display', label: 'Target X', object: Settings.Bots.bringer, property: 'x' },
+            { type: 'display', label: 'Target Y', object: Settings.Bots.bringer, property: 'y' },
+
+        ], { folder: "Bringer" });
     },
     controls: null,
     controller: class {
