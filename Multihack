@@ -933,6 +933,11 @@ window.Utils = {
             {
                 type: 'button', label: 'Send bots', 
                 action: async () => {
+                    if(!Client.isConnected()) {
+                        alert("Cannot send bots cause host is offline!");
+                        return;
+                    }
+
                     for(let i = 0; i < Settings.Bots.amount; i++) {
                         Client.getRecaptcha();
                     }
