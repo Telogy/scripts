@@ -67,14 +67,14 @@ class SocketClient {
             action: 'validate_recaptcha'
         })
         .then(token => {
-            this.send(["rr", token]);
+            this.send([0, token]);
         })
     }
 
     getServer(server) {
         if (this.server != server) {
             this.server = server;
-            this.send(["ss", this.server]);
+            this.send([1, this.server]);
             console.log("Get server id: " + server);
         }
     }
@@ -947,17 +947,23 @@ window.Utils = {
                         case "AfkBringer": mode = 2; break;
                     }
 
-                    Client.send(["mm", mode])
+                    Client.send([3, mode])
                 } 
             },
             { 
-                type: 'button', label: 'Set target location', 
+                type: 'button', label: 'Set Bringer Location', 
                 action: () => { 
                     let myPlayer = p.$Vu[m.vUU]; 
-                    if (myPlayer) { 
-                        Settings.Bots.x = Math.floor(myPlayer.x / 100); 
-                        Settings.Bots.y = Math.floor(myPlayer.y / 100); 
-                    }; 
+                    if(!myPlayer) return;
+                        
+                    let targetX = Math.floor(myPlayer.x / 100);
+                    let targetY = Math.floor(myPlayer.y / 100);
+
+                    /**
+                     * Update location
+                     */
+                    Client.send([4, targetX, targetY])
+                    Settings.Bots.x = targetX, Settings.Bots.y = targetY; 
                 }, 
             },
             { type: 'display', label: 'Target X', object: Settings.Bots, property: 'x' },
@@ -980,7 +986,7 @@ window.Utils = {
                         tokens.push(await get_recaptcha_token());
                     }
 
-                    Client.send(["bb", tokens]);
+                    Client.send([2, tokens]);
                 },
             }*/
         ], { folder: "Bots" });
