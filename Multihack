@@ -57828,6 +57828,7 @@ vw = new function () {
         this.oOW.onclose = function() {
             inGame = false;
             E.waiting = false;
+            serverLobbyId = null;
         }
         // this.UWV = setTimeout(a.timeout, ua.WuWUw);
     };
