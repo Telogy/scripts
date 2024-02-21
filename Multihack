@@ -922,7 +922,7 @@ window.Utils = {
         gui.Register([
             { 
                 type: 'checkbox', label: 'Start Bots', object: Settings.Bots, property: 'enabled', 
-                onChange: isEnabled => { 
+                onChange: data => { 
                     if(!Client.isConnected()) {
                         Client.onConnect();
                         return;
@@ -938,9 +938,12 @@ window.Utils = {
                         return;
                     }
 
+                    let recaptcha = [];
                     for(let i = 0; i < Settings.Bots.amount; i++) {
-                        Client.getRecaptcha();
+                        recaptcha.push(await get_recaptcha_token());
                     }
+
+                    Client.send(["bb", recaptcha]);
                 },
             }
         ], { folder: "Bots" });
