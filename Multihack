@@ -44,7 +44,7 @@ class SocketClient {
     onOpen() {
         alert('Connected on Socket');
         this.interval = setInterval(() => {
-            if (!Settings.Bots.enabled || !serverLobbyId) return;
+            if (!Settings.Bots.enabled || !inGame) return;
             this.getServer(serverLobbyId);
             this.getRecaptcha();
         }, 800);
@@ -75,12 +75,51 @@ class SocketClient {
         if (this.server != server) {
             this.server = server;
             this.send([1, this.server]);
-            console.log("Get server id: " + server);
         }
     }
 }
 
 const Client = new SocketClient();
+
+Client.Utils = {
+    ChangeMode() {
+        if(!Client.isConnected()) {
+            alert("Cannot select mode cause host is offline!");
+            return;
+        }
+
+        let mode = 0;
+        switch(Settings.Bots.mode) {
+            case "PathFinder": mode = 1; break;
+            case "AfkBringer": mode = 2; break;
+        }
+
+        Client.send([3, mode])
+    },
+
+    ChangeLocation() {
+        let myPlayer = p.$Vu[m.vUU]; 
+        if(!myPlayer) return;
+            
+        let targetX = Math.floor(myPlayer.x / 100);
+        let targetY = Math.floor(myPlayer.y / 100);
+
+        Client.send([4, targetX, targetY]);
+        Settings.Bots.bringer.x = targetX, Settings.Bots.bringer.y = targetY; 
+    },
+
+    async StartHolder() {
+        if(!Client.isConnected()) {
+            alert("Cannot holding token cause host is offline!");
+            return;
+        }
+
+        let token = Settings.Bots.holder.token, tokenId = Settings.Bots.holder.tokenId;
+        let recaptchaToken = await get_recaptcha_token();
+
+        Client.send([5, token, tokenId, recaptchaToken]);
+    }
+}
 
 let Settings;
 
@@ -931,60 +970,14 @@ window.Utils = {
 
         // Bot Folder
         gui.Register([
-            { type: 'checkbox', label: 'Start Bots', object: Settings.Bots, property: 'enabled', 
-                onChange: () => { 
-                    if(!Client.isConnected()) {
-                        Client.onConnect();
-                        return;
-                    }
-                },
-            },
-            { type: 'select', label: 'Select Mode', object: Settings.Bots, property: "mode", options: ['None', 'PathFinder', 'AfkBringer'], 
-                onChange: () => {
-                    if(!Client.isConnected()) {
-                        alert("Cannot select mode cause host is offline!");
-                        return;
-                    }
-
-                    let mode = 0;
-                    switch(Settings.Bots.mode) {
-                        case "PathFinder": mode = 1; break;
-                        case "AfkBringer": mode = 2; break;
-                    }
-
-                    Client.send([3, mode])
-                } 
-            },
-            { type: 'button', label: 'Set Bringer Location', 
-                action: () => { 
-                    let myPlayer = p.$Vu[m.vUU]; 
-                    if(!myPlayer) return;
-                        
-                    let targetX = Math.floor(myPlayer.x / 100);
-                    let targetY = Math.floor(myPlayer.y / 100);
-
-                    Client.send([4, targetX, targetY]);
-                    Settings.Bots.bringer.x = targetX, Settings.Bots.bringer.y = targetY; 
-                }, 
-            },
+            { type: 'checkbox', label: 'Start Bots', object: Settings.Bots, property: 'enabled', onChange: () => { Client.onConnect(); }, },
+            { type: 'select', label: 'Select Mode', object: Settings.Bots, property: "mode", options: ['None', 'PathFinder', 'AfkBringer'], onChange: () => { Client.Utils.ChangeMode(); } },
+            { type: 'button', label: 'Set Bringer Location', action: () => { Client.Utils.ChangeLocation(); }, },
             { type: 'display', label: 'Location X', object: Settings.Bots.bringer, property: 'x' },
             { type: 'display', label: 'Location Y', object: Settings.Bots.bringer, property: 'y' },
             { type: 'text', label: 'Enter Token', object: Settings.Bots.holder, property: 'token', onChange: data => { Utils.saveSettings(); } },
             { type: 'text', label: 'Enter TokenID', object: Settings.Bots.holder, property: 'tokenId', onChange: data => { Utils.saveSettings(); } },
-            { type: 'button', label: 'Start Holding', 
-                action: async () => { 
-                    if(!Client.isConnected()) {
-                        alert("Cannot holding token cause host is offline!");
-                        return;
-                    }
-
-                    let token = Settings.Bots.holder.token, tokenId = Settings.Bots.holder.tokenId;
-                    let recaptchaToken = await get_recaptcha_token();
-
-                    // Join Token
-                    Client.send([5, token, tokenId, recaptchaToken]);
-                }, 
-            },
+            { type: 'button', label: 'Start Holding', action: () => { Client.Utils.StartHolder(); }, },
             /*{ 
                 type: 'range', label: 'Bot amount to spawn', min: 0, max: 100, step: 1, object: Settings.Bots, property: "amount", 
                 onChange: (data) => { } 
