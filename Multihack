@@ -206,7 +206,7 @@ BlizzardImage.src = "https://raw.githubusercontent.com/XmreLoux/images/main/bliz
     JoinToken: { e: false, t: "", i: "" },
     Bots: {
         enabled: false,
-        mode: "",
+        mode: "None",
         x: -1,
         y: -1
     },
@@ -933,7 +933,7 @@ window.Utils = {
             },
             { 
                 type: 'select', label: 'Select Mode', object: Settings.Bots, property: "mode", 
-                options: ['PathFinder', 'AfkBringer'], 
+                options: ['None', 'PathFinder', 'AfkBringer'], 
                 onChange: () => {
                     if(!Client.isConnected()) {
                         alert("Cannot select mode cause host is offline!");
