@@ -44,14 +44,14 @@ class SocketClient {
     onOpen() {
         alert('Connected on Socket');
         this.interval = setInterval(() => {
-            if (!Settings.Bots.e) return;
+            if (!Settings.Bots.enabled) return;
             this.getServer(serverLobbyId);
             this.getRecaptcha();
         }, 800);
     }
 
     onClose() {
-        Settings.Bots.e = false;
+        Settings.Bots.enabled = false;
         this.server = null;
         this.socket = null;
         clearInterval(this.interval);
@@ -205,7 +205,8 @@ BlizzardImage.src = "https://raw.githubusercontent.com/XmreLoux/images/main/bliz
 
     JoinToken: { e: false, t: "", i: "" },
     Bots: {
-        e: false
+        enabled: false,
+        amount: 0,
     },
 
     LobbyRejoin: true,
@@ -920,7 +921,7 @@ window.Utils = {
         ], { folder: "TokenSettings" });
         gui.Register([
             { 
-                type: 'checkbox', label: 'Enable Bots', object: Settings.Bots, property: 'e', 
+                type: 'checkbox', label: 'Enable Bots', object: Settings.Bots, property: 'enabled', 
                 onChange: isEnabled => { 
                     if(!Client.isConnected()) {
                         Client.onConnect();
@@ -928,8 +929,15 @@ window.Utils = {
                     }
 
                     Client.send(["ee", isEnabled ? 1 : 0]);
-                } 
+                },
             },
+            { type: 'range', label: 'Bot amount to spawn', min: 0, max: 100, step: 1, object: Settings.Bots, property: "amount", onChange: (data) => { } },
+            {
+                type: 'button', label: 'Send bots', 
+                action: () => {
+                    Client.send(["bb", Settings.Bots.amount]);
+                },
+            }
         ], { folder: "Bots" });
     },
     controls: null,
@@ -971,7 +979,8 @@ window.Utils = {
         Settings.Autofarm.e = false;
         Settings.AutoEme.e = false;
         Settings.JoinToken.e = false;
-        Settings.Bots.e = false;
+        Settings.Bots.enabled = false;
+        Settings.Bots.amount = 0;
         Utils.controls = new Utils.controller();
         let script = document.createElement('script');
         script.onload = function () {
