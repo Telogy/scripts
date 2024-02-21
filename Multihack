@@ -936,6 +936,7 @@ window.Utils = {
                 options: ['None', 'PathFinder', 'AfkBringer'], 
                 onChange: () => {
                     if(!Client.isConnected()) {
+                        Settings.Bots.mode = 'None';
                         alert("Cannot select mode cause host is offline!");
                         return;
                     }
