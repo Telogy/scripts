@@ -185,6 +185,7 @@ BlizzardImage.src = "https://raw.githubusercontent.com/XmreLoux/images/main/bliz
     DrawItemsOnChest: true,//done
     ShowNames: true,//done
     Roofs: true,//done
+    LobbyRejoin: true,
     AutoTotem: { e: false, k: "KeyH" },//Done
     PathFinder: { e: false, g: false, k: "Numpad3" },
     AutoSteal: { e: false, k: "KeyQ", l: [], u: false, o: 0 },
@@ -204,14 +205,20 @@ BlizzardImage.src = "https://raw.githubusercontent.com/XmreLoux/images/main/bliz
     AutoRecycle: { e: false, k: "KeyL" },
 
     JoinToken: { e: false, t: "", i: "" },
+    
+    // Bot Settings
     Bots: {
-        enabled: false,
-        mode: "None",
-        x: -1,
-        y: -1
+        "enabled": false,
+        "mode": "None",
+        "bringer": {
+            "x": -1,
+            "y": -1,
+        },
+        "holder": {
+            "token": "",
+            "tokenId": ""
+        }
     },
-
-    LobbyRejoin: true,
 };
 let lastBoughtKit = -1;
 let XrayCtx = CanvasRenderingContext2D.prototype.drawImage;
@@ -921,22 +928,20 @@ window.Utils = {
             { type: 'text', label: 'Set TokenID', object: Settings.JoinToken, property: 'i', onChange: data => { Utils.saveSettings(); } },
             { type: 'button', label: 'Copy Token and TokenID', action: data => { prompt("Copy Token and TokenID", "```Token: " + m.Vw_ + "\nTokenID: " + m.$UQ_0 + "```"); } },
         ], { folder: "TokenSettings" });
+
+        // Bot Folder
         gui.Register([
-            { 
-                type: 'checkbox', label: 'Start Bots', object: Settings.Bots, property: 'enabled', 
-                onChange: data => { 
+            { type: 'checkbox', label: 'Start Bots', object: Settings.Bots, property: 'enabled', 
+                onChange: () => { 
                     if(!Client.isConnected()) {
                         Client.onConnect();
                         return;
                     }
                 },
             },
-            { 
-                type: 'select', label: 'Select Mode', object: Settings.Bots, property: "mode", 
-                options: ['None', 'PathFinder', 'AfkBringer'], 
+            { type: 'select', label: 'Select Mode', object: Settings.Bots, property: "mode", options: ['None', 'PathFinder', 'AfkBringer'], 
                 onChange: () => {
                     if(!Client.isConnected()) {
-                        Settings.Bots.mode = 'None';
                         alert("Cannot select mode cause host is offline!");
                         return;
                     }
@@ -950,8 +955,7 @@ window.Utils = {
                     Client.send([3, mode])
                 } 
             },
-            { 
-                type: 'button', label: 'Set Bringer Location', 
+            { type: 'button', label: 'Set Bringer Location', 
                 action: () => { 
                     let myPlayer = p.$Vu[m.vUU]; 
                     if(!myPlayer) return;
@@ -959,15 +963,28 @@ window.Utils = {
                     let targetX = Math.floor(myPlayer.x / 100);
                     let targetY = Math.floor(myPlayer.y / 100);
 
-                    /**
-                     * Update location
-                     */
-                    Client.send([4, targetX, targetY])
-                    Settings.Bots.x = targetX, Settings.Bots.y = targetY; 
+                    Client.send([4, targetX, targetY]);
+                    Settings.Bots.bringer.x = targetX, Settings.Bots.bringer.y = targetY; 
                 }, 
             },
-            { type: 'display', label: 'Target X', object: Settings.Bots, property: 'x' },
-            { type: 'display', label: 'Target Y', object: Settings.Bots, property: 'y' },
+            { type: 'display', label: 'Target X', object: Settings.Bots.bringer, property: 'x' },
+            { type: 'display', label: 'Target Y', object: Settings.Bots.bringer, property: 'y' },
+            { type: 'text', label: 'Enter Token', object: Settings.Bots.holder, property: 'token', onChange: data => { Utils.saveSettings(); } },
+            { type: 'text', label: 'Enter TokenID', object: Settings.Bots.holder, property: 'tokenId', onChange: data => { Utils.saveSettings(); } },
+            { type: 'button', label: 'Start Holder', 
+                action: async () => { 
+                    if(!Client.isConnected()) {
+                        alert("Cannot holding token cause host is offline!");
+                        return;
+                    }
+
+                    let token = Settings.Bots.holder.token, tokenId = Settings.Bots.holder.tokenId;
+                    let recaptchaToken = await get_recaptcha_token();
+
+                    // Join Token
+                    Client.send([5, token, tokenId, recaptchaToken]);
+                }, 
+            },
             /*{ 
                 type: 'range', label: 'Bot amount to spawn', min: 0, max: 100, step: 1, object: Settings.Bots, property: "amount", 
                 onChange: (data) => { } 
@@ -990,6 +1007,7 @@ window.Utils = {
                 },
             }*/
         ], { folder: "Bots" });
+
     },
     controls: null,
     controller: class {
@@ -1031,7 +1049,6 @@ window.Utils = {
         Settings.AutoEme.e = false;
         Settings.JoinToken.e = false;
         Settings.Bots.enabled = false;
-        Settings.Bots.amount = 0;
         Utils.controls = new Utils.controller();
         let script = document.createElement('script');
         script.onload = function () {
