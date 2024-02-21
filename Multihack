@@ -932,17 +932,6 @@ window.Utils = {
                 },
             },
             { 
-                type: 'checkbox', label: 'Start Bots', object: Settings.Bots, property: 'enabled', 
-                onChange: isEnabled => { 
-                    if(!Client.isConnected()) {
-                        alert("Cannot enable bringer cause host is offline!");
-                        return;
-                    }
-
-                    Client.send(["pp", isEnabled ? 1 : 0]);
-                },
-            },
-            { 
                 type: 'select', label: 'Select Mode', object: Settings.Bots, property: "mode", 
                 options: ['PathFinder', 'AfkBringer'], 
                 onChange: () => {
