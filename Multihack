@@ -921,7 +921,7 @@ window.Utils = {
         ], { folder: "TokenSettings" });
         gui.Register([
             { 
-                type: 'checkbox', label: 'Enable Bots', object: Settings.Bots, property: 'enabled', 
+                type: 'checkbox', label: 'Start Bots', object: Settings.Bots, property: 'enabled', 
                 onChange: isEnabled => { 
                     if(!Client.isConnected()) {
                         Client.onConnect();
