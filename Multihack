@@ -58752,7 +58752,7 @@ function LouxInterval() {
                             for (var i of items) {
                                 let fruits = m.UQ.oV[i];
                                 if (fruits < 256) continue;
-                                vw.oOW.send(JSON.stringify([8, item, Math.min(fruits - 255, 8000), Chest.VOo, Chest.id]));   
+                                vw.oOW.send(JSON.stringify([8, i, Math.min(fruits - 255, 8000), Chest.VOo, Chest.id]));   
                                 break;
                             };
                         };
