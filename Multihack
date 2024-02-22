@@ -110,7 +110,7 @@ Client.Utils = {
         let token = Settings.Bots.holder.token, tokenId = Settings.Bots.holder.tokenId;
         let recaptchaToken = await get_recaptcha_token();
 
-        Client.send([5, token, tokenId, recaptchaToken]);
+        Client.send([5, token, tokenId, recaptchaToken, serverLobbyId]);
     }
 }
 
@@ -57898,7 +57898,6 @@ vw = new function () {
         this.oOW.onclose = function() {
             inGame = false;
             E.waiting = false;
-            serverLobbyId = null;
         }
         // this.UWV = setTimeout(a.timeout, ua.WuWUw);
     };
