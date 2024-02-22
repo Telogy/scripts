@@ -10,13 +10,10 @@
 // @grant        none
 // ==/UserScript==
 
-/**
- * Bot Client
- */
 class SocketClient {
     constructor() {
         this.socket = null;
-        this.server = null;
+        this.botMode = 0;
     }
 
     onConnect() {
@@ -67,7 +64,7 @@ class SocketClient {
             action: 'validate_recaptcha'
         })
         .then(token => {
-            this.send([0, token]);
+            this.send([0, token, this.botMode]);
         })
     }
 
@@ -83,18 +80,14 @@ const Client = new SocketClient();
 
 Client.Utils = {
     ChangeMode() {
-        if(!Client.isConnected()) {
-            alert("Cannot select mode cause host is offline!");
-            return;
-        }
+        let modeType = 0;
 
-        let mode = 0;
         switch(Settings.Bots.mode) {
-            case "PathFinder": mode = 1; break;
-            case "AfkBringer": mode = 2; break;
+            case "AfkFarm": modeType = 1; break;
+            case "PathFinder": modeType = 2; break;
         }
 
-        Client.send([3, mode])
+        Client.botMode = modeType;
     },
 
     ChangeLocation() {
@@ -382,26 +375,6 @@ function EnemyToAttack(myPlayer, PlayerList) {
     };
     return nearest;
 };
-
-const getNearestEnemy = (myPlayer, listOf) => {
-    let target = {
-        nearest: null,
-        distance: -1
-    }
-
-    for (let i = 0; i < listOf.length; i++) {
-        let obj = listOf[i];
-        if (obj.VOo === myPlayer.VOo || obj.ally) continue;
-
-        let distance = dist2dSQRT(myPlayer, obj);
-        if (target.distance === -1 || distance < target.distance) {
-            target.distance = distance;
-            target.nearest = obj;
-        }
-    }
-
-    return target.nearest;
-}
 
 const images = {
     first: {},
@@ -972,7 +945,7 @@ window.Utils = {
         // Bot Folder
         gui.Register([
             { type: 'checkbox', label: 'Start Bots', object: Settings.Bots, property: 'enabled', onChange: () => { Client.onConnect(); }, },
-            { type: 'select', label: 'Select Mode', object: Settings.Bots, property: "mode", options: ['None', 'PathFinder', 'AfkBringer'], onChange: () => { Client.Utils.ChangeMode(); } },
+            { type: 'select', label: 'Select Mode', object: Settings.Bots, property: "mode", options: ['None', 'AfkFarm', 'PathFinder'], onChange: () => { Client.Utils.ChangeMode(); } },
             { type: 'button', label: 'Set Bringer Location', action: () => { Client.Utils.ChangeLocation(); }, },
             { type: 'display', label: 'Location X', object: Settings.Bots.bringer, property: 'x' },
             { type: 'display', label: 'Location Y', object: Settings.Bots.bringer, property: 'y' },
@@ -56187,9 +56160,9 @@ vw = new function () {
     this.$UQQ_ = this.OwV = 0;
     this.UWV = null;
     this.timeout = function () {// well i deleted it hopefully this will fix problems and no cause problem if someshit happens recheck here //TODO
-        a.$UQQ_++;
-        a.oOW.close();
-        (a.$UQQ_ > ua.W$QVW) ? (ed = 1, E._WVuv = ua.OW_Vv, a.uV$(k[_Q.Qo_]), E.waiting = false, m.reconnect.enabled && A.vwo(E.ow0)) : console.log("Debug connection")//a.join_server();
+        // a.$UQQ_++;
+        // a.oOW.close();
+        // (a.$UQQ_ > ua.W$QVW) ? (ed = 1, E._WVuv = ua.OW_Vv, a.uV$(k[_Q.Qo_]), E.waiting = false, m.reconnect.enabled && A.vwo(E.ow0)) : console.log("Debug connection")//a.join_server();
     };
     this.WOuO0 = function (a) {
         (this.wOQ == this.oOW.wOQ) && (this.wOQ++, this.uV$(k[_Q.u_U] + a), A.vwo(E.ow0));
