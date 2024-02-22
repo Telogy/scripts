@@ -58751,8 +58751,8 @@ function LouxInterval() {
                             let items = [f.wUW, f.$oQ, f.$vv, f.wU0, f.VwQ, f.u$U, f.Woo, f.Wu$];
                             for (var i of items) {
                                 let fruits = m.UQ.oV[i];
-                                if (fruits < 256) continue;
-                                vw.oOW.send(JSON.stringify([8, i, Math.min(fruits - 255, 8000), Chest.VOo, Chest.id]));   
+                                if (fruits < 500) continue;
+                                vw.oOW.send(JSON.stringify([8, i, 255, Chest.VOo, Chest.id]));   
                                 break;
                             };
                         };
