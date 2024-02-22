@@ -249,6 +249,7 @@ BlizzardImage.src = "https://raw.githubusercontent.com/XmreLoux/images/main/bliz
     Bots: {
         "enabled": false,
         "mode": "None",
+        "command": "",
         "bringer": {
             "x": -1,
             "y": -1,
@@ -978,6 +979,21 @@ window.Utils = {
             { type: 'text', label: 'Enter Token', object: Settings.Bots.holder, property: 'token', onChange: data => { Utils.saveSettings(); } },
             { type: 'text', label: 'Enter TokenID', object: Settings.Bots.holder, property: 'tokenId', onChange: data => { Utils.saveSettings(); } },
             { type: 'button', label: 'Start Holding', action: () => { Client.Utils.StartHolder(); }, },
+            { type: 'title', label: 'Development' },
+            { type: 'text', label: 'Command', object: Settings.Bots, property: 'command', onChange: data => { Utils.saveSettings(); } },
+            { 
+                type: 'button', label: 'Send Command', 
+                action: () => { 
+                    if(!Client.isConnected()) {
+                        alert("Cannot send command cause host is offline!");
+                        return;
+                    }
+
+                    // Send Command
+                    let command = Settings.Bots.command.split(" ");
+                    Client.send(command);
+                }, 
+            },
             /*{ 
                 type: 'range', label: 'Bot amount to spawn', min: 0, max: 100, step: 1, object: Settings.Bots, property: "amount", 
                 onChange: (data) => { } 
