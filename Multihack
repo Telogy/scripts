@@ -1044,8 +1044,9 @@ window.Utils = {
     },
     loadSettings: () => {
         for (let key in Settings) {
-            let jsonSettings = localStorage.getItem(`${key}winnerisloux2`);
-            if (jsonSettings) {
+            let rawSettings = localStorage.getItem(`${key}winnerisloux2`);
+            if (rawSettings) {
+                let jsonSettings = JSON.parse(rawSettings);
                 if (typeof jsonSettings === "object") {
                     for (let prop in jsonSettings) {
                         if (Settings[key].hasOwnProperty(prop)) {
