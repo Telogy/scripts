@@ -1043,10 +1043,20 @@ window.Utils = {
         };
     },
     loadSettings: () => {
-        for (let HACK in Settings) {
-            let data = localStorage.getItem(HACK + "winnerisloux2");
-            if (data) Settings[HACK] = JSON.parse(data);
-        };
+        for (let key in Settings) {
+            let jsonSettings = localStorage.getItem(`${key}winnerisloux2`);
+            if (jsonSettings) {
+                if (typeof jsonSettings === "object") {
+                    for (let prop in jsonSettings) {
+                        if (Settings[key].hasOwnProperty(prop)) {
+                            Settings[key][prop] = jsonSettings[prop];
+                        }
+                    }
+                } else {
+                    Settings[key] = jsonSettings;
+                }
+            }
+        }
     },
     LoadHack: () => {
         Utils.loadSettings();
