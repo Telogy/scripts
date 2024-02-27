@@ -49,7 +49,7 @@ class SocketClient {
                 let recaptchaToken = await get_recaptcha_token();
 
                 this.send([
-                    5,
+                    8,
                     token,
                     tokenId,
                     recaptchaToken
