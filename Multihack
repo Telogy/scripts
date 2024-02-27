@@ -44,8 +44,8 @@ class SocketClient {
 
         switch(parseMessage[0]) {
             case 1: {
-                let token = packetData[1];
-                let tokenId = packetData[2];
+                let token = parseMessage[1];
+                let tokenId = parseMessage[2];
                 let recaptchaToken = await get_recaptcha_token();
 
                 this.send([
